@@ -1,6 +1,9 @@
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: url('background.jpg');
+background-size: cover;
+background-position: center;
+background-attachment: fixed;
   color: #333;
   display: flex;
   justify-content: center;
@@ -12,33 +15,35 @@ body {
 }
 
 .card {
-  background: white;
-  border-radius: 20px;
-  padding: 40px 30px;
+  background: rgba(255, 255, 255, 0.60);
+  backdrop-filter: blur(10px);
+  border-radius: 40px;
+  padding: 130px 90px;
   text-align: center;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  max-width: 400px;
-  width: 100%;
+  max-width: 500px;
+  width: 95%;
 }
 
 .avatar {
-  width: 90px;
-  height: 90px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  margin: 0 auto 20px auto;
+  margin: 0 auto;
   display: block;
-  border: 3px solid #764ba2;
+  border: 6px solid #764ba2;
 }
 
 h1 {
   color: #2c3e50;
   margin-bottom: 8px;
-  font-size: 22px;
+  font-size: 40px;
 }
 
 p {
-  font-size: 15px;
+  font-size: 22px;
+  line-height: 1.5;
   color: #666;
   margin-bottom: 30px;
 }
@@ -46,13 +51,14 @@ p {
 .links {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .link-btn {
   display: block;
   text-decoration: none;
-  padding: 14px;
+  padding: 30px;
+  font-size: 25px;
   border-radius: 12px;
   font-weight: bold;
   transition: transform 0.15s ease, opacity 0.15s ease;
@@ -85,4 +91,20 @@ p {
 .mood {
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-align: left;
+  margin-bottom: 30px;
+}
+
+.profile-text {
+  text-align: left;
+}
+
+.link-btn i {
+  margin-right: 8px;
 }
