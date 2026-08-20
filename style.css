@@ -93,6 +93,11 @@ p {
   color: white;
 }
 
+.game {
+  background: linear-gradient(45deg, #f8f2da, #8b897e);
+  color: black;
+}
+
 .profile-header {
   display: flex;
   align-items: center;
