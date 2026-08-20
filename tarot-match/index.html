@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Tarot Match</title>
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#150b23">
+<link rel="apple-touch-icon" href="icons/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;600&family=Metamorphous&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #150b23;
+    --bg-glow: #241238;
+    --surface: #2a1245;
+    --surface-2: #3d1f5c;
+    --accent: #a855f7;
+    --accent-bright: #c084fc;
+    --gold: #f0b429;
+    --text: #e9e1f5;
+    --text-dim: #ffcc66;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      url('images/bg3.jpg') center / cover no-repeat;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 48px;
+  }
+
+  header {
+    text-align: center;
+    margin-top: 48px;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-family: 'Metamorphous', serif;
+    font-weight: 700;
+    font-size: 1.8rem;
+    letter-spacing: 0.04em;
+    margin: 0 0 4px;
+    background: ghostwhite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+  }
+
+  .status-bar {
+    display: flex;
+    gap: 24px;
+    margin: 18px 0;
+    font-family: 'Cinzel', serif;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat .value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--gold);
+    transition: transform 0.15s ease;
+  }
+
+  .stat .label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+  }
+
+  .stat.pulse .value {
+    transform: scale(1.25);
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .card {
+    aspect-ratio: 2.8 / 4.25;
+    perspective: 800px;
+    cursor: pointer;
+  }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+
+  .card.flipped .card-inner,
+  .card.matched .card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-back {
+    background:
+      url('images/cardbg.jpg') center / cover no-repeat;
+    border: 1px solid rgba(192, 132, 252, 0.25);
+    box-shadow: inset 0 0 12px rgba(168, 85, 247, 0.15);
+  }
+
+  
+
+  .card-front {
+    background: linear-gradient(155deg, #4a1f70, #2a1245);
+    transform: rotateY(180deg);
+    font-size: 2rem;
+    color: var(--accent-bright);
+    border: 1px solid rgba(192, 132, 252, 0.3);
+  }
+
+  .card.matched .card-front {
+    color: var(--gold);
+    background: linear-gradient(155deg, #4a3410, #2a1a08);
+    border-color: rgba(240, 180, 41, 0.5);
+    box-shadow: 0 0 16px rgba(240, 180, 41, 0.35);
+  }
+
+  .card.matched {
+    animation: settle 0.4s ease;
+  }
+
+  @keyframes settle {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+    100% { transform: scale(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-inner { transition: none; }
+    .card.matched { animation: none; }
+  }
+
+  .restart-btn {
+    margin-top: 26px;
+    background: transparent;
+    border: 1px solid #ffcc66;
+    color: #ffcc66;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    padding: 10px 22px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .restart-btn:hover,
+  .restart-btn:focus-visible {
+    background: var(--accent);
+    color: #150b23;
+  }
+
+  .restart-btn:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  .card:focus-visible .card-inner {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+    border-radius: 10px;
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 5, 18, 0.88);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 24px;
+    z-index: 10;
+  }
+
+  .overlay.show { display: flex; }
+
+  .overlay h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+  }
+
+  .overlay.win h2 { color: var(--gold); }
+  .overlay.lose h2 { color: var(--accent-bright); }
+
+  .overlay p {
+    color: var(--text-dim);
+    margin-bottom: 20px;
+  }
+
+  .card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 9px;
+  }
+  
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Tarot Match</h1>
+  <div class="subtitle">Uncover every pair before your moves run out</div>
+</header>
+
+<div class="status-bar">
+  <div class="stat" id="movesStat">
+    <div class="value" id="movesValue">20</div>
+    <div class="label">Moves Left</div>
+  </div>
+  <div class="stat" id="pairsStat">
+    <div class="value" id="pairsValue">0/8</div>
+    <div class="label">Pairs Found</div>
+  </div>
+</div>
+
+<div class="board" id="board"></div>
+
+<button class="restart-btn" id="restartBtn">Restart</button>
+
+<div class="overlay" id="overlay">
+  <h2 id="overlayTitle"></h2>
+  <p id="overlayText"></p>
+  <button class="restart-btn" id="overlayRestartBtn">Play Again</button>
+</div>
+
+<script>
+  // ---- Game config ----
+  const SYMBOLS = ['fool.jpg', 'hermit.jpg', 'priestess.jpg', 'magician.jpg', 'lovers.jpg', 'star.jpg', 'sun.jpg', 'moon.jpg' ]; // 8 rune symbols = 8 pairs
+  const STARTING_MOVES = 20;
+
+  // ---- Game state ----
+  let cards = [];          // array of { id, symbol, flipped, matched }
+  let flippedIds = [];     // ids of currently face-up (unmatched) cards
+  let movesLeft = STARTING_MOVES;
+  let pairsFound = 0;
+  let lockBoard = false;   // prevents clicks while a mismatch is being shown
+
+  // ---- DOM refs ----
+  const boardEl = document.getElementById('board');
+  const movesValueEl = document.getElementById('movesValue');
+  const movesStatEl = document.getElementById('movesStat');
+  const pairsValueEl = document.getElementById('pairsValue');
+  const overlayEl = document.getElementById('overlay');
+  const overlayTitleEl = document.getElementById('overlayTitle');
+  const overlayTextEl = document.getElementById('overlayText');
+
+  // Shuffle helper (Fisher-Yates)
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  function buildDeck() {
+    const pairSymbols = shuffle([...SYMBOLS, ...SYMBOLS]);
+    return pairSymbols.map((symbol, index) => ({
+      id: index,
+      symbol,
+      flipped: false,
+      matched: false
+    }));
+  }
+
+  function renderBoard() {
+    boardEl.innerHTML = '';
+    cards.forEach(card => {
+      const cardEl = document.createElement('div');
+      cardEl.className = 'card' + (card.flipped ? ' flipped' : '') + (card.matched ? ' matched' : '');
+      cardEl.tabIndex = 0;
+      cardEl.setAttribute('role', 'button');
+      cardEl.setAttribute('aria-label', card.matched ? `Matched tarot card: ${card.symbol.replace('.jpg', '')}` : 'Hidden tarot card');
+
+      cardEl.innerHTML = `
+  <div class="card-inner">
+    <div class="card-face card-back"></div>
+    <div class="card-face card-front">
+      <img src="images/${card.symbol}" class="card-img" alt="tarot card">
+    </div>
+  </div>
+      `;
+
+      cardEl.addEventListener('click', () => handleCardClick(card.id));
+      cardEl.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCardClick(card.id);
+        }
+      });
+
+      boardEl.appendChild(cardEl);
+    });
+  }
+
+  function updateStats() {
+    movesValueEl.textContent = movesLeft;
+    pairsValueEl.textContent = `${pairsFound}/${SYMBOLS.length}`;
+    movesStatEl.classList.add('pulse');
+    setTimeout(() => movesStatEl.classList.remove('pulse'), 150);
+  }
+
+  function handleCardClick(id) {
+    if (lockBoard) return;
+
+    const card = cards.find(c => c.id === id);
+    if (!card || card.flipped || card.matched) return;
+
+    card.flipped = true;
+    flippedIds.push(id);
+    renderBoard();
+
+    if (flippedIds.length === 2) {
+      lockBoard = true;
+      movesLeft--;
+      updateStats();
+      checkForMatch();
+    }
+  }
+
+  function checkForMatch() {
+    const [firstId, secondId] = flippedIds;
+    const first = cards.find(c => c.id === firstId);
+    const second = cards.find(c => c.id === secondId);
+
+    const isMatch = first.symbol === second.symbol;
+
+    setTimeout(() => {
+      if (isMatch) {
+        first.matched = true;
+        second.matched = true;
+        pairsFound++;
+      } else {
+        first.flipped = false;
+        second.flipped = false;
+      }
+
+      flippedIds = [];
+      lockBoard = false;
+      renderBoard();
+      updateStats();
+      checkGameEnd();
+    }, isMatch ? 400 : 800);
+  }
+
+  function checkGameEnd() {
+    if (pairsFound === SYMBOLS.length) {
+      showOverlay('win');
+    } else if (movesLeft === 0) {
+      showOverlay('lose');
+    }
+  }
+
+  function showOverlay(result) {
+    overlayEl.className = 'overlay show ' + result;
+    if (result === 'win') {
+      overlayTitleEl.textContent = 'The Reading Is Complete';
+      overlayTextEl.textContent = `You matched all ${SYMBOLS.length} pairs with ${movesLeft} moves to spare.`;
+    } else {
+      overlayTitleEl.textContent = 'Out of Moves';
+      overlayTextEl.textContent = `You found ${pairsFound} of ${SYMBOLS.length} pairs. The cards return to the shadows.`;
+    }
+  }
+
+  function startGame() {
+    cards = buildDeck();
+    flippedIds = [];
+    movesLeft = STARTING_MOVES;
+    pairsFound = 0;
+    lockBoard = false;
+    overlayEl.className = 'overlay';
+    renderBoard();
+    updateStats();
+  }
+
+  document.getElementById('restartBtn').addEventListener('click', startGame);
+  document.getElementById('overlayRestartBtn').addEventListener('click', startGame);
+
+  startGame();
+</script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js');
+    });
+  }
+  </script>
+
+</body>
+</html>
